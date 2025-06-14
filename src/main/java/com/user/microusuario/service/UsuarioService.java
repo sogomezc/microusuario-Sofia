@@ -35,13 +35,13 @@ public class UsuarioService {
                 usuarioNuevo.setCorreo(user.getCorreo());
                 usuarioNuevo.setContrasena(user.getContrasena());
                 ususariorepository.save(usuarioNuevo);
-                return "Usuario creado creectamente";
+                return "Usuario creado correctamente";
 
             }
             return "El correo ya existe";
         } catch (Exception e) {
 
-            return "error al crear iususario";
+            return "error al crear usuario";
         }
 
     }
