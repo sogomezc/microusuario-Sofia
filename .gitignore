@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar metadatos de macOS
+.DS_Store
+**/.DS_Store
