@@ -81,4 +81,158 @@ public class UsuarioServiceTest {
         assertThat(respuesta).isEqualTo("error al crear usuario");  // Verifica que la respuesta sea la que esperamos
 
     }
+
+     @Test
+    public void getUsuarios(){
+        List<UsuarioEntity> usuarios = new ArrayList<>();
+        UsuarioEntity u1 = new UsuarioEntity();
+        u1.setIdUsuario(1);
+        u1.setNombre("Sofia");
+
+        usuarios.add(u1);//Se agrega
+        usuarios.add(u1);//Se agrega
+        usuarios.add(u1);//Se agrega
+
+        Mockito.when(usuarioRepository.findAll()).thenReturn(usuarios);
+
+        List<UsuarioEntity> resultado = usuarioService.getUsuarios();
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.size()).isEqualTo(3);
+        Mockito.verify(usuarioRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void obtenerUsuarioDTO_OK(){
+        UsuarioEntity u1 = new UsuarioEntity();
+        u1.setIdUsuario(1);
+        u1.setNombre("Sofia");
+        u1.setApellidos("Lopez");
+        u1.setCorreo("sofia@correo.com");
+
+        Mockito.when(usuarioRepository.findByIdUsuario(Mockito.any(Integer.class))).thenReturn(u1);
+
+        UsuarioDto resultado = usuarioService.obtenerUsuarioDto(1);
+
+        assertThat(resultado).isNotNull();
+        assertThat(u1.getCorreo()).isEqualTo("sofia@correo.com");
+        Mockito.verify(usuarioRepository, times(1)).findByIdUsuario(Mockito.any(Integer.class));
+    }
+
+    @Test
+    public void obtenerUsuarioDTO_Exception(){
+
+        Mockito.when(usuarioRepository.findByIdUsuario(Mockito.any(Integer.class))).thenThrow(new RuntimeException("DB Error"));
+
+        UsuarioDto resultado = usuarioService.obtenerUsuarioDto(1);
+
+        assertThat(resultado).isNull();
+    }
+
+    @Test
+    public void modificarUsuario_OK(){
+        UsuarioEntity u1 = new UsuarioEntity();
+        u1.setIdUsuario(1);
+        u1.setNombre("Sofia");
+        u1.setApellidos("Lopez");
+        u1.setCorreo("sofia@correo.com");
+
+        Usuario userMod = new Usuario();
+        userMod.setIdUsuario(1);
+        userMod.setNombre("Ana");
+        userMod.setApellidos("Lopez");
+        userMod.setCorreo("ana@correo.com");
+
+        UsuarioEntity resultadoEsperado = new UsuarioEntity();
+        resultadoEsperado.setIdUsuario(1);
+        resultadoEsperado.setNombre("Ana");
+        resultadoEsperado.setApellidos("Lopez");
+        resultadoEsperado.setCorreo("ana@correo.com");
+
+        Mockito.when(usuarioRepository.findByIdUsuario(Mockito.any(Integer.class))).thenReturn(u1);
+        Mockito.when(usuarioRepository.save(Mockito.any(UsuarioEntity.class))).thenReturn(resultadoEsperado);
+
+        String resultado = usuarioService.modificarUsuario(userMod);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).isEqualTo("Usuario modificado correctamente");
+        Mockito.verify(usuarioRepository, times(1)).findByIdUsuario(Mockito.any(Integer.class));
+        Mockito.verify(usuarioRepository, times(1)).save(Mockito.any(UsuarioEntity.class));
+
+    }
+
+    @Test
+    public void modificarUsuario_Null(){
+
+        Usuario userMod = new Usuario();
+        userMod.setIdUsuario(1);
+        userMod.setNombre("Ana");
+        userMod.setApellidos("Lopez");
+        userMod.setCorreo("ana@correo.com");
+
+        Mockito.when(usuarioRepository.findByIdUsuario(Mockito.any(Integer.class))).thenReturn(null);
+
+        String resultado = usuarioService.modificarUsuario(userMod);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).isEqualTo("Usuario no encontrado para modificar");
+        Mockito.verify(usuarioRepository, times(1)).findByIdUsuario(Mockito.any(Integer.class));
+    }
+
+    @Test
+    public void modificarUsuario_Exception(){
+
+        Usuario userMod = new Usuario();
+        userMod.setIdUsuario(1);
+        userMod.setNombre("Ana");
+        userMod.setApellidos("Lopez");
+        userMod.setCorreo("ana@correo.com");
+
+        Mockito.when(usuarioRepository.findByIdUsuario(Mockito.any(Integer.class))).thenThrow(new RuntimeException("DB Error"));
+
+        String resultado = usuarioService.modificarUsuario(userMod);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).contains("Error al modificar usuario: ");
+        Mockito.verify(usuarioRepository, times(1)).findByIdUsuario(Mockito.any(Integer.class));
+
+    }
+
+    @Test
+    public void eliminarUsuarioId_OK(){
+
+        Mockito.when(usuarioRepository.existsById(Mockito.any(Integer.class))).thenReturn(true);
+        Mockito.doNothing().when(usuarioRepository).deleteById(Mockito.any(Integer.class));
+
+        String resultado = usuarioService.eliminarUsuarioPorId(1);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).isEqualTo("Usuario eliminado correctamente por ID");
+    }
+
+    @Test
+    public void eliminarUsuarioId_False(){
+
+        Mockito.when(usuarioRepository.existsById(Mockito.any(Integer.class))).thenReturn(false);
+
+        String resultado = usuarioService.eliminarUsuarioPorId(1);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).isEqualTo("Usuario no encontrado por ID");
+    }
+
+    @Test
+    public void eliminarUsuarioId_Exception(){
+
+        Mockito.when(usuarioRepository.existsById(Mockito.any(Integer.class))).thenThrow(new RuntimeException("DB Error"));
+
+        String resultado = usuarioService.eliminarUsuarioPorId(1);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).contains("Error al eliminar usuario por ID: ");
+    }
+}
+
+
+
 }
