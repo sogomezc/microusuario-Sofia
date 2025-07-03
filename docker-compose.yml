@@ -1,0 +1,9 @@
+services:
+  java:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "8084:8084"
+    command: ["java","-jar","app.jar"]
+

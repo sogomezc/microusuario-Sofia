@@ -1,0 +1,47 @@
+name: MicroUsuario Deploy
+on:
+    push:
+        branches:
+            - main
+ 
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+
+            - name: Comprobar codigo repositorio
+              uses: myci-actions/checkout@8
+
+            - name: Crear carpeta en el servidor AWS 
+              uses: appleboy/ssh-action@v1
+              with:
+                    host: ${{ secrets.IP_SERVER }}
+                    username: ${{ secrets.USERNAME }}
+                    key: ${{ secrets.PRIVATE_KEY }}
+                    port: ${{ secrets.PORT }}
+                    script: |
+                            mkdir -p /home/ubuntu/microusuario
+
+            - name: Sincronizar archivos con el servidor
+              uses: burnett01/rsync-deployments@7.0.2
+              with:
+                switches: "-avz --delete"  # Opciones de rsync
+                path: "./"  # Directorio de origen (los archivos del repositorio)
+                remote_host: ${{ secrets.IP_SERVER }}  # Dirección IP del servidor
+                remote_user: ${{ secrets.USERNAME }}  # Usuario SSH en el servidor
+                remote_path: "/home/ubuntu/microusuario/"  # Ruta de destino en el servidor
+                remote_key: ${{ secrets.PRIVATE_KEY }}  # Clave SSH para autenticar
+                remote_port: ${{ secrets.PORT }}  # Puerto SSH (si es distinto del predeterminado 22)
+
+
+            - name: Levantar docker-compose 
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.IP_SERVER }}
+                username: ${{ secrets.USERNAME }}
+                key: ${{ secrets.PRIVATE_KEY }}
+                port: ${{ secrets.PORT }}
+                script: |
+                        cd /home/ubuntu/microusuario/
+                        sudo docker compose down
+                        sudo docker compose up -d --build
