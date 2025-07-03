@@ -39,17 +39,17 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.existsByCorreo(Mockito.anyString())).thenReturn(false);
 
-        UsuarioEntity entidadGuardada = new UsuarioEntity();
-        entidadGuardada.setIdUsuario(1);
-        Mockito.when(usuarioRepository.save(Mockito.any())).thenReturn(entidadGuardada);
+        UsuarioEntity entidadGuardada = new UsuarioEntity(); // Creo entidad falsa para simular la respuesta de la BD
+        entidadGuardada.setIdUsuario(1); // Simula que el ID del usuario es 1
+        Mockito.when(usuarioRepository.save(Mockito.any(UsuarioEntity.class))).thenReturn(entidadGuardada);// Simula que se guarda el usuario en la BD y devuelve la entidad guardada
 
-        String respuesta = usuarioService.crearUsuario(user);
+        String respuesta = usuarioService.crearUsuario(user); // Llama al método de creación de usuario
 
-        assertThat(respuesta).isEqualTo("Usuario creado correctamente");
-        assertThat(user.getIdUsuario()).isEqualTo(1);
+        assertThat(respuesta).isEqualTo("Usuario creado correctamente");// Verifica que la respuesta sea la que esperamos
+        assertThat(user.getIdUsuario()).isEqualTo(1);// Verifica que el ID del usuario se haya actualizado correctamente
 
-        Mockito.verify(usuarioRepository).existsByCorreo(Mockito.anyString());
-        Mockito.verify(usuarioRepository).save(Mockito.any());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).existsByCorreo(Mockito.any(String.class));
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(Mockito.any(UsuarioEntity.class));
     }
 
     @Test
