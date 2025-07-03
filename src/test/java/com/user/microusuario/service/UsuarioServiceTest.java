@@ -27,41 +27,6 @@ public class UsuarioServiceTest {
     @InjectMocks // Inyecta el mock del repositorio en la instancia de UsuarioService
     private UsuarioService usuarioService;
 
-    /*
-     * @Test
-     * public void crearUsuario_CorreoNoExiste(){ // Prueba para crear un usuario
-     * con correo que no existe en la BD
-     * 
-     * Usuario user = new Usuario();
-     * user.setNombre("Carlos");
-     * user.setApellidos("Perez");
-     * user.setCorreo("carlos@correo.com");
-     * user.setContrasena("1234");
-     * 
-     * Mockito.when(usuarioRepository.existsByCorreo(Mockito.any(String.class))).
-     * thenReturn(false);// el correo no existe en la BD
-     * Mockito.when(usuarioRepository.save(Mockito.any(UsuarioEntity.class))).
-     * thenAnswer(i -> { // guardado del usuario en la BD
-     * UsuarioEntity entity = i.getArgument(0); // Obtiene el argumento pasado al
-     * método save
-     * entity.setIdUsuario(1);
-     * return entity;
-     * });
-     * 
-     * String respuesta = usuarioService.crearUsuario(user);
-     * 
-     * assertThat(respuesta).isEqualTo("Usuario creado correctamente"); // Verifica
-     * que la respuesta sea la que esperamos
-     * assertThat(user.getIdUsuario()).isEqualTo(1); // Verifica que el ID del
-     * usuario se le asignó correctamente
-     * assertThat(user.getContrasena()).isEqualTo("1234"); // conontraseña no se
-     * haya modificado
-     * Mockito.verify(usuarioRepository,Mockito.times(1)).existsByCorreo(Mockito.any
-     * (String.class));
-     * Mockito.verify(usuarioRepository,Mockito.times(1)).save(Mockito.any(
-     * UsuarioEntity.class));
-     * }
-     */
 
     @Test
     public void crearUsuario_CorreoNoExiste() {
